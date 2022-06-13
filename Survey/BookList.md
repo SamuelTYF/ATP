@@ -1,2 +1,3 @@
 - [ ] Hinman, P. (2005), Fundamentals of Mathematical Logic, A K Peters
 - [ ] Logic for Computer Science: Foundations of Automatic Theorem Proving
+- [x] 普通高等教育"十·五“国家级规划教材·数理逻辑
