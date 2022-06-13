@@ -84,6 +84,18 @@ T = ‘washing machine’ ;
 no
 ```
 
+### SLD Resolution
+
+
+
 ## SWI-Prolog
 
 <https://github.com/SWI-Prolog/swipl-devel>
+
+## Compile by JS
+
+| Name         | Description                                            |
+| ------------ | ------------------------------------------------------ |
+| prolog.js    | Prolog parser, compiler, and interpreter in JavaScript |
+| Yield Prolog | Compiles Prolog into JavaScript, C#, and Python        |
+| Tau Prolog   | Prolog interpreter in JavaScript                       |

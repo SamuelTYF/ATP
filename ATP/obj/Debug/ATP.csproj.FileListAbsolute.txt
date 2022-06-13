@@ -1,0 +1,6 @@
+D:\ATP\ATP\bin\Debug\ATP.dll
+D:\ATP\ATP\bin\Debug\ATP.pdb
+D:\ATP\ATP\obj\Debug\ATP.csproj.AssemblyReference.cache
+D:\ATP\ATP\obj\Debug\ATP.csproj.CoreCompileInputs.cache
+D:\ATP\ATP\obj\Debug\ATP.dll
+D:\ATP\ATP\obj\Debug\ATP.pdb
