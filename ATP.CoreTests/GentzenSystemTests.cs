@@ -1,10 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ATP.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATP.Core.Tests
 {
@@ -78,6 +72,19 @@ namespace ATP.Core.Tests
             sequent.Mode = next.Mode;
             Console.WriteLine(system.Trace(sequent));
             Assert.AreEqual(sequent.Mode, Mode.Fail);
+        }
+
+        [TestMethod()]
+        public void ToCNFTest()
+        {
+            GentzenSystem system = new();
+            string source = "Implies[Or[Implies[p,r],Implies[q,Not[r]]],Or[p,q]]";
+            ITerm term = system.Parse(source);
+            Assert.AreEqual(term.ToString(), source);
+            CNFSystem csys = new();
+            CNF cnf=system.ToCNF(csys, term, true);
+            Assert.IsNotNull(cnf);
+            Console.WriteLine(csys.Format(cnf));
         }
     }
 }

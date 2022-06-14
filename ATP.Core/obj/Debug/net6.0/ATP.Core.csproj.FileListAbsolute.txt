@@ -1,0 +1,15 @@
+D:\ATP\ATP.Core\bin\Debug\net6.0\ATP.Core.exe
+D:\ATP\ATP.Core\bin\Debug\net6.0\ATP.Core.deps.json
+D:\ATP\ATP.Core\bin\Debug\net6.0\ATP.Core.runtimeconfig.json
+D:\ATP\ATP.Core\bin\Debug\net6.0\ATP.Core.dll
+D:\ATP\ATP.Core\bin\Debug\net6.0\ATP.Core.pdb
+D:\ATP\ATP.Core\obj\Debug\net6.0\ATP.Core.csproj.AssemblyReference.cache
+D:\ATP\ATP.Core\obj\Debug\net6.0\ATP.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\ATP\ATP.Core\obj\Debug\net6.0\ATP.Core.AssemblyInfoInputs.cache
+D:\ATP\ATP.Core\obj\Debug\net6.0\ATP.Core.AssemblyInfo.cs
+D:\ATP\ATP.Core\obj\Debug\net6.0\ATP.Core.csproj.CoreCompileInputs.cache
+D:\ATP\ATP.Core\obj\Debug\net6.0\ATP.Core.dll
+D:\ATP\ATP.Core\obj\Debug\net6.0\refint\ATP.Core.dll
+D:\ATP\ATP.Core\obj\Debug\net6.0\ATP.Core.pdb
+D:\ATP\ATP.Core\obj\Debug\net6.0\ATP.Core.genruntimeconfig.cache
+D:\ATP\ATP.Core\obj\Debug\net6.0\ref\ATP.Core.dll

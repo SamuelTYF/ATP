@@ -203,7 +203,7 @@
                 Mode.Fail => "red",
                 _ => throw new Exception()
             };
-            string info = $"\\color{{{color}}}{string.Join(",", sequent.Left.Select(left => Terms[left]))} \\vdash {string.Join(",", sequent.Right.Select(right => Terms[right]))}";
+            string info = $"\\color{{{color}}}{string.Join(",", sequent.Left.Select(left => Format(Terms[left])))} \\vdash {string.Join(",", sequent.Right.Select(right => Format(Terms[right])))}";
             if (sequent.Nodes == null) return info;
             else return $"\\cfrac{{{info}}}{{{string.Join(" \\qquad ", sequent.Nodes.Select(node => Trace(node)))}}}";
         }
@@ -362,6 +362,60 @@
                 else sequent.RegisterRight(t.Index);
             }
             else throw new Exception();
+        }
+        public string Format(ITerm term,int mode=0)
+        {
+            if (term is Variable variable) return variable.Name;
+            else if (term is Term1 t)
+            {
+                if (t.Operator.Index == And)
+                    if(mode is 0 or 1) return $"{Format(t.Terms[0],1)} \\wedge {Format(t.Terms[1],1)}";
+                    else if(mode is 2 or 3) return $"({Format(t.Terms[0], 1)} \\wedge {Format(t.Terms[1], 1)})";
+                if (t.Operator.Index == Or)
+                    if (mode is 0 or 2) return $"{Format(t.Terms[0])} \\vee {Format(t.Terms[1])}";
+                    else if (mode is 1 or 3) return $"({Format(t.Terms[0])} \\vee {Format(t.Terms[1])})";
+                if (t.Operator.Index == Implies) return $"{Format(t.Terms[0],3)} \\to {Format(t.Terms[1],3)}";
+                if (t.Operator.Index == Not) return $"\\lnot {Format(t.Terms[0],3)}";
+            }
+            throw new Exception();
+        }
+        public CNF ToCNF(CNFSystem system,ITerm term,bool @true=true)
+        {
+            if (term is Variable variable)
+            {
+                CNF cnf = new();
+                HashSet<CNF.Literal> c = new();
+                c.Add(system.Literal(variable.Name, @true));
+                cnf.Values.Add(c);
+                return cnf;
+            }
+            else if (term is Term1 t)
+            {
+                if (t.Operator.Index == And)
+                {
+                    if (@true)
+                        return ToCNF(system, t.Terms[0], true) & ToCNF(system, t.Terms[1], true);
+                    else
+                        return ToCNF(system, t.Terms[0], false) | ToCNF(system, t.Terms[1], false);
+                }
+                else if (t.Operator.Index == Or)
+                {
+                    if (@true)
+                        return ToCNF(system, t.Terms[0], true) | ToCNF(system, t.Terms[1], true);
+                    else
+                        return ToCNF(system, t.Terms[0], false) & ToCNF(system, t.Terms[1], false);
+                }
+                else if (t.Operator.Index == Implies)
+                {
+                    if (@true)
+                        return ToCNF(system, t.Terms[0], false) | ToCNF(system, t.Terms[1], true);
+                    else
+                        return ToCNF(system, t.Terms[0], true) & ToCNF(system, t.Terms[1], false);
+                }
+                else if (t.Operator.Index == Not)
+                    return ToCNF(system, t.Terms[0], !@true);
+            }
+            throw new Exception();
         }
     }
 }

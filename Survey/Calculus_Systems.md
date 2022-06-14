@@ -92,12 +92,16 @@ Can resolve the situation of infinit sequents
 
 # Test Result
 
+## Depth-first
+
 $$
 \cfrac{\color{green} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[And[p,q],r]]}{\cfrac{\color{green}Or[Implies[p,r],Implies[q,r]] \vdash Implies[And[p,q],r]}{\cfrac{\color{green}Or[Implies[p,r],Implies[q,r]],And[p,q] \vdash r}{\cfrac{\color{green}Or[Implies[p,r],Implies[q,r]],p,q \vdash r}{\cfrac{\color{green}Implies[p,r],p,q \vdash r}{\color{green}p,q \vdash r,p \qquad \color{green}r,p,q \vdash r} \qquad \cfrac{\color{green}Implies[q,r],p,q \vdash r}{\color{green}p,q \vdash r,q \qquad \color{green}r,p,q \vdash r}}}}}
 $$
 
 $$\cfrac{\color{red} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[Or[p,q],r]]}{\cfrac{\color{red}Or[Implies[p,r],Implies[q,r]] \vdash Implies[Or[p,q],r]}{\cfrac{\color{red}Or[Implies[p,r],Implies[q,r]],Or[p,q] \vdash r}{\cfrac{\color{red}Implies[p,r],Or[p,q] \vdash r}{\cfrac{\color{red}Or[p,q] \vdash r,p}{\color{green}p \vdash r,p \qquad \color{red}q \vdash r,p} \qquad \color{green}r,Or[p,q] \vdash r} \qquad \color{black}Implies[q,r],Or[p,q] \vdash r}}}
 $$
+
+## Fast Test
 
 $$ \cfrac{\color{green} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[And[p,q],r]]}{\cfrac{\color{green}Or[Implies[p,r],Implies[q,r]],p,q \vdash r}{\color{green}r,p,q \vdash r \qquad \color{green}r,p,q \vdash r}}
 $$
