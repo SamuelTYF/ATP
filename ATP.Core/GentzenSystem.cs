@@ -386,7 +386,7 @@
                 CNF cnf = new();
                 HashSet<CNF.Literal> c = new();
                 c.Add(system.Literal(variable.Name, @true));
-                cnf.Values.Add(c);
+                cnf.Values.Add(system.Find(c));
                 return cnf;
             }
             else if (term is Term1 t)
@@ -394,23 +394,23 @@
                 if (t.Operator.Index == And)
                 {
                     if (@true)
-                        return ToCNF(system, t.Terms[0], true) & ToCNF(system, t.Terms[1], true);
+                        return system.And(ToCNF(system, t.Terms[0], true) , ToCNF(system, t.Terms[1], true));
                     else
-                        return ToCNF(system, t.Terms[0], false) | ToCNF(system, t.Terms[1], false);
+                        return system.Or(ToCNF(system, t.Terms[0], false) , ToCNF(system, t.Terms[1], false));
                 }
                 else if (t.Operator.Index == Or)
                 {
                     if (@true)
-                        return ToCNF(system, t.Terms[0], true) | ToCNF(system, t.Terms[1], true);
+                        return system.Or(ToCNF(system, t.Terms[0], true) , ToCNF(system, t.Terms[1], true));
                     else
-                        return ToCNF(system, t.Terms[0], false) & ToCNF(system, t.Terms[1], false);
+                        return system.And(ToCNF(system, t.Terms[0], false) , ToCNF(system, t.Terms[1], false));
                 }
                 else if (t.Operator.Index == Implies)
                 {
                     if (@true)
-                        return ToCNF(system, t.Terms[0], false) | ToCNF(system, t.Terms[1], true);
+                        return system.Or(ToCNF(system, t.Terms[0], false) , ToCNF(system, t.Terms[1], true));
                     else
-                        return ToCNF(system, t.Terms[0], true) & ToCNF(system, t.Terms[1], false);
+                        return system.And(ToCNF(system, t.Terms[0], true) , ToCNF(system, t.Terms[1], false));
                 }
                 else if (t.Operator.Index == Not)
                     return ToCNF(system, t.Terms[0], !@true);

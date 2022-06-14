@@ -5,12 +5,12 @@
         static void Main(string[] args)
         {
             GentzenSystem system = new();
-            string source = "Implies[And[Or[A,P],Or[B,Not[P]]],Or[A,B]]";
+            string source = "And[And[Or[P,Not[Q]],Or[Not[P],Not[S]]],And[Or[S,Not[Q]],Q]";
             ITerm term = system.Parse(source);
-            FiniteSequent sequent = new();
-            sequent.RegisterRight(term.Index);
-            system.Test(sequent);
-            Console.WriteLine(system.Trace(sequent));
+            CNFSystem csys = new();
+            CNF cnf = system.ToCNF(csys, term, true);
+            Console.WriteLine(csys.Format(cnf));
+            csys.Test(cnf);
         }
     }
 }

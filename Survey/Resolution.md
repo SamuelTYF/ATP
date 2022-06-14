@@ -27,3 +27,21 @@ $$
 $$
 D=\{(t_1,R_1),...,(t_m,R_m)\}
 $$
+
+## PL-Resolution
+
+### Test
+
+$$\cfrac{\{\lnot P , \lnot S\}\qquad\{P , \lnot Q\}}{\{\lnot P , P\}\qquad\{\lnot S , \lnot Q\}}$$
+$$\cfrac{\{S , \lnot Q\}\qquad\{\lnot P , \lnot S\}}{\{S , \lnot S\}\qquad\{\lnot Q , \lnot P\}}$$
+$$\cfrac{\{Q\}\qquad\{P , \lnot Q\}}{\{Q , \lnot Q\}\qquad\{P\}}$$
+$$\cfrac{\{Q\}\qquad\{S , \lnot Q\}}{\{Q , \lnot Q\}\qquad\{S\}}$$
+$$\cfrac{\{\lnot S , \lnot Q\}\qquad\{S , \lnot Q\}}{\{\lnot S , S\}\qquad\{\lnot Q\}}$$
+$$\cfrac{\{\lnot S , \lnot Q\}\qquad\{Q\}}{\{\lnot Q , Q\}\qquad\{\lnot S\}}$$
+$$\cfrac{\{\lnot Q , \lnot P\}\qquad\{P , \lnot Q\}}{\{\lnot P , P\}\qquad\{\lnot Q\}}$$
+$$\cfrac{\{\lnot Q , \lnot P\}\qquad\{Q\}}{\{\lnot Q , Q\}\qquad\{\lnot P\}}$$
+$$\cfrac{\{P\}\qquad\{\lnot P , \lnot S\}}{\{P , \lnot P\}\qquad\{\lnot S\}}$$
+$$\cfrac{\{P\}\qquad\{\lnot Q , \lnot P\}}{\{P , \lnot P\}\qquad\{\lnot Q\}}$$
+$$\cfrac{\{S\}\qquad\{\lnot P , \lnot S\}}{\{S , \lnot S\}\qquad\{\lnot P\}}$$
+$$\cfrac{\{S\}\qquad\{\lnot S , \lnot Q\}}{\{S , \lnot S\}\qquad\{\lnot Q\}}$$
+$$\cfrac{\{\lnot Q\}\qquad\{Q\}}{\{\lnot Q , Q\}\qquad\{\}}$$
