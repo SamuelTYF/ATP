@@ -78,6 +78,29 @@ $$
 \frac{\Gamma\vdash A\qquad\Pi,A\vdash B}{\Gamma,\Pi\vdash B}
 $$
 
+# Searching Algorithm
+
+## Breadth-first
+
+Can resolve the situation of infinit sequents
+
+[The Search Procedure](logic_gallier.pdf)
+
+## Depth-first
+
+
+
+# Test Result
+
 $$
-\cfrac{ \vdash p \to r \vee q \to r \to p \wedge q \to r}{\cfrac{p \to r \vee q \to r \vdash p \wedge q \to r}{\cfrac{p \to r \vee q \to r,p \wedge q \vdash r}{\cfrac{p \to r \vee q \to r,p,q \vdash r}{\cfrac{p,q,p \to r \vdash r}{\cfrac{p,q \vdash r,p}{} \qquad \cfrac{p,q,r \vdash r}{}} \qquad \cfrac{p,q,q \to r \vdash r}{\cfrac{p,q \vdash r,q}{} \qquad \cfrac{p,q,r \vdash r}{}}}}}}
+\cfrac{\color{green} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[And[p,q],r]]}{\cfrac{\color{green}Or[Implies[p,r],Implies[q,r]] \vdash Implies[And[p,q],r]}{\cfrac{\color{green}Or[Implies[p,r],Implies[q,r]],And[p,q] \vdash r}{\cfrac{\color{green}Or[Implies[p,r],Implies[q,r]],p,q \vdash r}{\cfrac{\color{green}Implies[p,r],p,q \vdash r}{\color{green}p,q \vdash r,p \qquad \color{green}r,p,q \vdash r} \qquad \cfrac{\color{green}Implies[q,r],p,q \vdash r}{\color{green}p,q \vdash r,q \qquad \color{green}r,p,q \vdash r}}}}}
+$$
+
+$$\cfrac{\color{red} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[Or[p,q],r]]}{\cfrac{\color{red}Or[Implies[p,r],Implies[q,r]] \vdash Implies[Or[p,q],r]}{\cfrac{\color{red}Or[Implies[p,r],Implies[q,r]],Or[p,q] \vdash r}{\cfrac{\color{red}Implies[p,r],Or[p,q] \vdash r}{\cfrac{\color{red}Or[p,q] \vdash r,p}{\color{green}p \vdash r,p \qquad \color{red}q \vdash r,p} \qquad \color{green}r,Or[p,q] \vdash r} \qquad \color{black}Implies[q,r],Or[p,q] \vdash r}}}
+$$
+
+$$ \cfrac{\color{green} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[And[p,q],r]]}{\cfrac{\color{green}Or[Implies[p,r],Implies[q,r]],p,q \vdash r}{\color{green}r,p,q \vdash r \qquad \color{green}r,p,q \vdash r}}
+$$
+
+$$ \cfrac{\color{red} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[Or[p,q],r]]}{\cfrac{\color{red}Or[Implies[p,r],Implies[q,r]],Or[p,q] \vdash r}{\cfrac{\color{red}Or[p,q] \vdash r,p}{\color{green}p \vdash r,p \qquad \color{red}q \vdash r,p} \qquad \color{black}Or[p,q] \vdash r,q}}
 $$
