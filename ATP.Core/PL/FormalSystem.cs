@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ATP.Core
+namespace ATP.Core.PL
 {
     public class FormalSystem
     {
@@ -12,7 +12,7 @@ namespace ATP.Core
         {
             Operators = operators;
             OperatorMap = new();
-            for(int i=0;i<operators.Length;i++)
+            for (int i = 0; i < operators.Length; i++)
             {
                 operators[i].Index = i;
                 OperatorMap[operators[i].Name] = operators[i];
@@ -22,7 +22,7 @@ namespace ATP.Core
         }
         public ITerm Variable(string name)
         {
-            if(!Variables.ContainsKey(name))
+            if (!Variables.ContainsKey(name))
             {
                 Variables[name] = Terms.Count;
                 Terms.Add(new Variable(name, Terms.Count, Operators));
@@ -31,18 +31,18 @@ namespace ATP.Core
         }
         public ITerm Call(string name, params ITerm[] terms)
             => Call(OperatorMap[name], terms);
-        public ITerm Call(IOperator @operator,params ITerm[] terms)
+        public ITerm Call(IOperator @operator, params ITerm[] terms)
         {
             if (@operator.Count != terms.Length) throw new Exception();
             HashSet<int> all = new(terms[0].OperatorBacks[@operator.Index].BackInfos[0].Select(info => info.Index));
             for (int i = 0; i < terms.Length; i++)
                 all.IntersectWith(terms[i].OperatorBacks[@operator.Index].BackInfos[i].Select(info => info.Index));
             if (all.Count > 1) throw new Exception();
-            if(all.Count==0)
+            if (all.Count == 0)
             {
                 all.Add(Terms.Count);
                 int d = terms.Select(term => term.Deep).Max() + 1;
-                Terms.Add(new Term1(@operator, terms, d, Terms.Count, Operators));
+                Terms.Add(new Term(@operator, terms, d, Terms.Count, Operators));
             }
             return Terms[all.First()];
         }

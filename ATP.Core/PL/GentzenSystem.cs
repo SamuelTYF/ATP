@@ -1,16 +1,16 @@
-﻿namespace ATP.Core
+﻿namespace ATP.Core.PL
 {
-    public class GentzenSystem:FormalSystem
+    public class GentzenSystem : FormalSystem
     {
-        public int And=>0;
-        public int Or=>1;
+        public int And => 0;
+        public int Or => 1;
         public int Not => 2;
-        public int Implies =>3;
+        public int Implies => 3;
         public GentzenSystem() : base(
-            new Operator1(2, "And"),
-            new Operator1(2, "Or"),
-            new Operator1(1, "Not"),
-            new Operator1(2, "Implies")
+            new Operator(2, "And"),
+            new Operator(2, "Or"),
+            new Operator(1, "Not"),
+            new Operator(2, "Implies")
             )
         {
 
@@ -26,9 +26,9 @@
         {
             if (sequent.Mode == Mode.Success) return;
             foreach (int left in sequent.Left)
-                if (Terms[left] is Term1 t)
+                if (Terms[left] is Term t)
                 {
-                    if(t.Operator.Index==And)
+                    if (t.Operator.Index == And)
                     {
                         FiniteSequent next = new();
                         next.Left.UnionWith(sequent.Left);
@@ -42,7 +42,7 @@
                         sequent.Mode = next.Mode;
                         return;
                     }
-                    else if(t.Operator.Index==Not)
+                    else if (t.Operator.Index == Not)
                     {
                         FiniteSequent next = new();
                         next.Left.UnionWith(sequent.Left);
@@ -56,10 +56,10 @@
                         return;
                     }
                 }
-            foreach(int right in sequent.Right)
-                if (Terms[right] is Term1 t)
+            foreach (int right in sequent.Right)
+                if (Terms[right] is Term t)
                 {
-                    if(t.Operator.Index==Or)
+                    if (t.Operator.Index == Or)
                     {
                         FiniteSequent next = new();
                         next.Left.UnionWith(sequent.Left);
@@ -73,7 +73,7 @@
                         sequent.Mode = next.Mode;
                         return;
                     }
-                    else if(t.Operator.Index==Implies)
+                    else if (t.Operator.Index == Implies)
                     {
                         FiniteSequent next = new();
                         next.Left.UnionWith(sequent.Left);
@@ -102,7 +102,7 @@
                     }
                 }
             foreach (int left in sequent.Left)
-                if (Terms[left] is Term1 t)
+                if (Terms[left] is Term t)
                 {
                     if (t.Operator.Index == Or)
                     {
@@ -161,7 +161,7 @@
                     else throw new Exception();
                 }
             foreach (int right in sequent.Right)
-                if (Terms[right] is Term1 t)
+                if (Terms[right] is Term t)
                 {
                     if (t.Operator.Index == And)
                     {
@@ -227,7 +227,7 @@
             if (sequent.Mode == Mode.Success) return;
             foreach (int left in sequent.Left)
             {
-                if (Terms[left] is Term1 t)
+                if (Terms[left] is Term t)
                 {
                     if (t.Operator.Index == Or)
                     {
@@ -287,7 +287,7 @@
             }
             foreach (int right in sequent.Right)
             {
-                if (Terms[right] is Term1 t)
+                if (Terms[right] is Term t)
                 {
                     if (t.Operator.Index == And)
                     {
@@ -320,10 +320,10 @@
             }
             sequent.Mode = Mode.Fail;
         }
-        public void InsertLeft(FiniteSequent sequent,ITerm term)
+        public void InsertLeft(FiniteSequent sequent, ITerm term)
         {
             if (term is Variable) sequent.RegisterLeft(term.Index);
-            else if (term is Term1 t)
+            else if (term is Term t)
             {
                 if (t.Operator.Index == And)
                 {
@@ -332,7 +332,7 @@
                 }
                 else if (t.Operator.Index == Not)
                     InsertRight(sequent, t.Terms[0]);
-                else if(t.Operator.Index==Implies)
+                else if (t.Operator.Index == Implies)
                 {
                     if (sequent.Left.Contains(t.Terms[0].Index)) InsertLeft(sequent, t.Terms[1]);
                     else if (sequent.Right.Contains(t.Terms[1].Index)) InsertRight(sequent, t.Terms[0]);
@@ -345,7 +345,7 @@
         public void InsertRight(FiniteSequent sequent, ITerm term)
         {
             if (term is Variable) sequent.RegisterRight(term.Index);
-            else if (term is Term1 t)
+            else if (term is Term t)
             {
                 if (t.Operator.Index == Or)
                 {
@@ -363,23 +363,23 @@
             }
             else throw new Exception();
         }
-        public string Format(ITerm term,int mode=0)
+        public string Format(ITerm term, int mode = 0)
         {
             if (term is Variable variable) return variable.Name;
-            else if (term is Term1 t)
+            else if (term is Term t)
             {
                 if (t.Operator.Index == And)
-                    if(mode is 0 or 1) return $"{Format(t.Terms[0],1)} \\wedge {Format(t.Terms[1],1)}";
-                    else if(mode is 2 or 3) return $"({Format(t.Terms[0], 1)} \\wedge {Format(t.Terms[1], 1)})";
+                    if (mode is 0 or 1) return $"{Format(t.Terms[0], 1)} \\wedge {Format(t.Terms[1], 1)}";
+                    else if (mode is 2 or 3) return $"({Format(t.Terms[0], 1)} \\wedge {Format(t.Terms[1], 1)})";
                 if (t.Operator.Index == Or)
                     if (mode is 0 or 2) return $"{Format(t.Terms[0])} \\vee {Format(t.Terms[1])}";
                     else if (mode is 1 or 3) return $"({Format(t.Terms[0])} \\vee {Format(t.Terms[1])})";
-                if (t.Operator.Index == Implies) return $"{Format(t.Terms[0],3)} \\to {Format(t.Terms[1],3)}";
-                if (t.Operator.Index == Not) return $"\\lnot {Format(t.Terms[0],3)}";
+                if (t.Operator.Index == Implies) return $"{Format(t.Terms[0], 3)} \\to {Format(t.Terms[1], 3)}";
+                if (t.Operator.Index == Not) return $"\\lnot {Format(t.Terms[0], 3)}";
             }
             throw new Exception();
         }
-        public CNF ToCNF(CNFSystem system,ITerm term,bool @true=true)
+        public CNF ToCNF(CNFSystem system, ITerm term, bool @true = true)
         {
             if (term is Variable variable)
             {
@@ -389,28 +389,28 @@
                 cnf.Values.Add(system.Find(c));
                 return cnf;
             }
-            else if (term is Term1 t)
+            else if (term is Term t)
             {
                 if (t.Operator.Index == And)
                 {
                     if (@true)
-                        return system.And(ToCNF(system, t.Terms[0], true) , ToCNF(system, t.Terms[1], true));
+                        return system.And(ToCNF(system, t.Terms[0], true), ToCNF(system, t.Terms[1], true));
                     else
-                        return system.Or(ToCNF(system, t.Terms[0], false) , ToCNF(system, t.Terms[1], false));
+                        return system.Or(ToCNF(system, t.Terms[0], false), ToCNF(system, t.Terms[1], false));
                 }
                 else if (t.Operator.Index == Or)
                 {
                     if (@true)
-                        return system.Or(ToCNF(system, t.Terms[0], true) , ToCNF(system, t.Terms[1], true));
+                        return system.Or(ToCNF(system, t.Terms[0], true), ToCNF(system, t.Terms[1], true));
                     else
-                        return system.And(ToCNF(system, t.Terms[0], false) , ToCNF(system, t.Terms[1], false));
+                        return system.And(ToCNF(system, t.Terms[0], false), ToCNF(system, t.Terms[1], false));
                 }
                 else if (t.Operator.Index == Implies)
                 {
                     if (@true)
-                        return system.Or(ToCNF(system, t.Terms[0], false) , ToCNF(system, t.Terms[1], true));
+                        return system.Or(ToCNF(system, t.Terms[0], false), ToCNF(system, t.Terms[1], true));
                     else
-                        return system.And(ToCNF(system, t.Terms[0], true) , ToCNF(system, t.Terms[1], false));
+                        return system.And(ToCNF(system, t.Terms[0], true), ToCNF(system, t.Terms[1], false));
                 }
                 else if (t.Operator.Index == Not)
                     return ToCNF(system, t.Terms[0], !@true);

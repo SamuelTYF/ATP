@@ -1,11 +1,11 @@
-﻿namespace ATP.Core
+﻿namespace ATP.Core.PL
 {
-    public class Operator1:IOperator
+    public class Operator : IOperator
     {
         public int Count { get; }
         public string Name { get; }
         public int Index { get; set; }
-        public Operator1(int count, string name)
+        public Operator(int count, string name)
         {
             Count = count;
             Name = name;

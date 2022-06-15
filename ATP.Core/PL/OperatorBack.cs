@@ -1,4 +1,4 @@
-﻿namespace ATP.Core
+﻿namespace ATP.Core.PL
 {
     public class OperatorBack
     {
@@ -8,7 +8,7 @@
         {
             Count = count;
             BackInfos = new HashSet<ITerm>[count];
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
                 BackInfos[i] = new();
         }
     }

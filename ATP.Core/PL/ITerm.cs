@@ -1,11 +1,12 @@
-﻿namespace ATP.Core
+﻿namespace ATP.Core.PL
 {
     public abstract class ITerm
     {
         public int Index { get; }
         public int Deep { get; }
         public OperatorBack[] OperatorBacks { get; }
-        public ITerm(int deep, int index,IOperator[] operators)
+        public HashSet<Variable> Variables;
+        public ITerm(int deep, int index, IOperator[] operators)
         {
             Deep = deep;
             Index = index;

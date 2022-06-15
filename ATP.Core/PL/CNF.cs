@@ -1,4 +1,4 @@
-﻿namespace ATP.Core
+﻿namespace ATP.Core.PL
 {
     public class CNF
     {
@@ -9,7 +9,7 @@
             public bool True;
             public Literal Mirror;
             public HashSet<int> Back;
-            public Literal(string name,int index, bool @true)
+            public Literal(string name, int index, bool @true)
             {
                 Name = name;
                 Index = index;

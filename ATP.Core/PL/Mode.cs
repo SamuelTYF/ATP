@@ -1,4 +1,4 @@
-﻿namespace ATP.Core
+﻿namespace ATP.Core.PL
 {
     public enum Mode
     {
