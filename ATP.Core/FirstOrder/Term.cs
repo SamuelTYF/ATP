@@ -2,13 +2,15 @@
 {
     public class Term
     {
+        public int Index;
         public Term Mirror;
         public bool True;
         public HashSet<Literal> Literals;
         public HashSet<BoundLiteral> BoundLiterals;
         public Dictionary<int, HashSet<int>[]> Backs;
-        public Term(bool @true)
+        public Term(int index, bool @true)
         {
+            Index = index;
             True = @true;
             Literals = new();
             BoundLiterals = new();

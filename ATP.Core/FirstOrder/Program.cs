@@ -1,4 +1,6 @@
-﻿namespace ATP.Core.FirstOrder
+﻿using ATP.Core.PL;
+
+namespace ATP.Core.FirstOrder
 {
     public class Program
     {
@@ -10,6 +12,11 @@
             Console.WriteLine(system.Format(t));
             Console.WriteLine(string.Join(",", t.BoundLiterals));
             Console.WriteLine(string.Join(",", t.Literals));
+            FiniteSequent sequent = new();
+            sequent.RegisterRight(t.Index);
+            system.Test(sequent);
+            Console.Clear();
+            Console.WriteLine(system.Trace(sequent));
         }
     }
 }

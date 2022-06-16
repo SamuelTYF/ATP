@@ -4,8 +4,7 @@
     {
         public Operator Operator;
         public Term[] Terms;
-        public int Index;
-        public Functor(Operator @operator, Term[] terms, bool @true, int index) : base(@true)
+        public Functor(int index,Operator @operator, Term[] terms, bool @true) : base(index, @true)
         {
             Operator = @operator;
             Terms = terms;

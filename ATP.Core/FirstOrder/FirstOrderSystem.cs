@@ -5,8 +5,8 @@ namespace ATP.Core.FirstOrder
     public class FirstOrderSystem
     {
         public List<Term> Terms;
-        public Dictionary<string, Literal> Literals;
-        public Dictionary<string, BoundLiteral> BoundLiterals;
+        public Dictionary<string, int> Literals;
+        public Dictionary<string, int> BoundLiterals;
         public List<Operator> Operators;
         public Dictionary<string, Operator> OperatorMap;
         public FirstOrderSystem()
@@ -31,25 +31,29 @@ namespace ATP.Core.FirstOrder
         {
             if (!Literals.ContainsKey(name))
             {
-                Literal t = new(name, true);
-                Literals[name] = t;
-                Literal f = new(name, false);
+                Literal t = new(Terms.Count, name, true);
+                Terms.Add(t);
+                Literals[name] = t.Index;
+                Literal f = new(Terms.Count, name, false);
+                Terms.Add(t);
                 t.Mirror = f;
                 f.Mirror = t;
             }
-            return @true ? Literals[name] : Literals[name].Mirror;
+            return @true ? Terms[Literals[name]] : Terms[Literals[name]].Mirror;
         }
         public Term GetBoundLiteral(string name, bool @true = true)
         {
             if (!BoundLiterals.ContainsKey(name))
             {
-                BoundLiteral t = new(name, true);
-                BoundLiterals[name] = t;
-                BoundLiteral f = new(name, false);
+                BoundLiteral t = new(Terms.Count, name, true);
+                Terms.Add(t);
+                BoundLiterals[name] = t.Index;
+                BoundLiteral f = new(Terms.Count, name, false);
+                Terms.Add(t);
                 t.Mirror = f;
                 f.Mirror = t;
             }
-            return @true ? BoundLiterals[name] : BoundLiterals[name].Mirror;
+            return @true ? Terms[BoundLiterals[name]] : Terms[BoundLiterals[name]].Mirror;
         }
         public Term Call(string name, params Term[] terms)
             => Call(GetOperator(name, terms.Length), terms);
@@ -58,13 +62,13 @@ namespace ATP.Core.FirstOrder
             HashSet<int> funcs = terms[0].GetBack(@operator.Index, 0);
             for (int i = 1; i < terms.Length; i++)
                 funcs.IntersectWith(terms[1].GetBack(@operator.Index, i));
-            List<Functor> functors = new(funcs.Select(i => Terms[i] as Functor));
+            List<Functor> functors = new(funcs.Select(i => Terms[i] as Functor).Where(func=>func.True));
             if (functors.Count > 1) throw new Exception();
             if (functors.Count == 0)
             {
-                Functor t = new(@operator, terms, true, Terms.Count);
+                Functor t = new(Terms.Count, @operator, terms, true);
                 Terms.Add(t);
-                Functor f = new(@operator, terms, false, Terms.Count);
+                Functor f = new(Terms.Count, @operator, terms, false);
                 Terms.Add(f);
                 functors.Add(t);
             }

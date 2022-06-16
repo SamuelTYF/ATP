@@ -3,7 +3,7 @@
     public class BoundLiteral : Term
     {
         public string Name;
-        public BoundLiteral(string name, bool @true) : base(@true)
+        public BoundLiteral(int index, string name, bool @true) : base(index, @true)
         {
             Name = name;
             BoundLiterals.Add(this);

@@ -3,7 +3,7 @@
     public class Literal : Term
     {
         public string Name;
-        public Literal(string name, bool @true) : base(@true)
+        public Literal(int index, string name, bool @true) : base(index, @true)
         {
             Name = name;
             Literals.Add(this);

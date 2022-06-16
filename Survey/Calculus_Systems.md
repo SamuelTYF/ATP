@@ -108,3 +108,11 @@ $$
 
 $$ \cfrac{\color{red} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[Or[p,q],r]]}{\cfrac{\color{red}Or[Implies[p,r],Implies[q,r]],Or[p,q] \vdash r}{\cfrac{\color{red}Or[p,q] \vdash r,p}{\color{green}p \vdash r,p \qquad \color{red}q \vdash r,p} \qquad \color{black}Or[p,q] \vdash r,q}}
 $$
+
+$$
+\cfrac{\color{green} \vdash (\exist x((P)\to(Q(x))))\to((P)\to(\exist z(Q(z))))}{\cfrac{\color{green}\exist x((P)\to(Q(x))) \vdash (P)\to(\exist z(Q(z)))}{\cfrac{\color{green}\exist x((P)\to(Q(x))),P \vdash \exist z(Q(z))}{\cfrac{\color{green}(P)\to(Q(t_1)),P \vdash \exist z(Q(z))}{\color{green}P \vdash \exist z(Q(z)),P \qquad \cfrac{\color{green}Q(t_1),P \vdash \exist z(Q(z))}{\color{green}Q(t_1),P \vdash \exist z(Q(z)),Q(t_0),Q(t_1)}}}}}
+$$
+
+$$
+\cfrac{\color{red} \vdash (\exist x((P)\to(Q(x))))\to((P)\to(\forall z(Q(z))))}{\cfrac{\color{red}\exist x((P)\to(Q(x))) \vdash (P)\to(\forall z(Q(z)))}{\cfrac{\color{red}\exist x((P)\to(Q(x))),P \vdash \forall z(Q(z))}{\cfrac{\color{red}(P)\to(Q(t_1)),P \vdash \forall z(Q(z))}{\color{green}P \vdash \forall z(Q(z)),P \qquad \cfrac{\color{red}Q(t_1),P \vdash \forall z(Q(z))}{\color{red}Q(t_1),P \vdash Q(t_2)}}}}}
+$$
