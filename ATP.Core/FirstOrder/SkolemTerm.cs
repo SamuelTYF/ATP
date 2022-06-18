@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace ATP.Core.FirstOrder
+﻿namespace ATP.Core.FirstOrder
 {
     public class SkolemTerm
     {
@@ -9,12 +7,16 @@ namespace ATP.Core.FirstOrder
         public HashSet<int> Back;
         public int Index;
         public Dictionary<int, HashSet<int>[]> Backs;
+        public HashSet<int> Constants;
+        public HashSet<int> Variables;
         public SkolemTerm(bool @true, int index)
         {
             True = @true;
             Back = new();
             Index = index;
             Backs = new();
+            Constants = new();
+            Variables = new();
         }
         public HashSet<int> GetBack(int key, int index)
             => Backs.ContainsKey(key) ? new(Backs[key][index]) : new();
@@ -45,6 +47,11 @@ namespace ATP.Core.FirstOrder
         {
             Operator = @operator;
             Terms = terms;
+            foreach(SkolemTerm term in terms)
+            {
+                Variables.UnionWith(term.Variables);
+                Constants.UnionWith(term.Constants);
+            }
         }
         public override string ToString() => True ? $"{Operator.Name}({string.Join<SkolemTerm>(",",Terms)})" : $"\\lnot {Operator.Name}({string.Join<SkolemTerm>(",", Terms)})";
     }

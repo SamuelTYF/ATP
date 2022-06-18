@@ -1,6 +1,4 @@
-﻿using ATP.Core.PL;
-
-namespace ATP.Core.FirstOrder
+﻿namespace ATP.Core.FirstOrder
 {
     public class SkolemSystem
     {
@@ -40,6 +38,8 @@ namespace ATP.Core.FirstOrder
                 Terms.Add(t);
                 t.Mirror = f;
                 f.Mirror = t;
+                t.Constants.Add(t.Index);
+                f.Constants.Add(f.Index);
             }
             return @true ? Terms[Constants[name]] : Terms[Constants[name]].Mirror;
         }
@@ -54,9 +54,13 @@ namespace ATP.Core.FirstOrder
                 Terms.Add(t);
                 t.Mirror = f;
                 f.Mirror = t;
+                t.Variables.Add(t.Index);
+                f.Variables.Add(f.Index);
             }
             return @true ? Terms[Variables[name]] : Terms[Variables[name]].Mirror;
         }
+        public SkolemTerm Call(string op, params SkolemTerm[] terms)
+            => Call(GetOperator(op, terms.Length), terms);
         public SkolemTerm Call(Operator @operator, params SkolemTerm[] terms)
         {
             HashSet<int> funcs = terms[0].GetBack(@operator.Index, 0);
@@ -239,6 +243,77 @@ namespace ATP.Core.FirstOrder
         }
         public string Format(SkolemForm sf)
             =>string.Join(" , ", sf.Clauses.Clauses.Select(clause => $"\\{{{string.Join(" , ", Clauses[clause])}\\}}"));
-
+        public SkolemTerm Substitution(SkolemTerm term, Dictionary<int, int> map)
+        {
+            if (!term.True) return Substitution(term.Mirror, map).Mirror;
+            if (map.ContainsKey(term.Index)) return Terms[map[term.Index]];
+            if (term is SkolemFunctor f)
+            {
+                Operator @operator = GetOperator(f.Operator.Name, f.Operator.Count);
+                return Call(@operator, f.Terms.Select(t => Substitution(t, map)).ToArray());
+            }
+            else return term;
+        }
+        public bool Unify(SkolemTerm a, SkolemTerm b,out SkolemTerm ra,out SkolemTerm rb,Dictionary<int,int> map=null)
+        {
+            if (map == null) map = new();
+            ra = null;
+            rb = null;
+            a = Substitution(a, map);
+            b = Substitution(b, map);
+            if (a.Index == b.Index)
+            {
+                ra = a;
+                rb = b;
+                return true;
+            }
+            if (a.Index == b.Mirror.Index) return false;
+            if (!a.True)
+            {
+                if(Unify(a.Mirror,b.Mirror,out SkolemTerm ta,out SkolemTerm tb,map))
+                {
+                    ra = ta.Mirror;
+                    rb = tb.Mirror;
+                    return true;
+                }
+                else return false;
+            }
+            if(a is SkolemVariable)
+            {
+                if (b.Variables.Contains(a.Index)) return false;
+                else 
+                {
+                    map[a.Index] = b.Index;
+                    ra = b;
+                    rb = b;
+                    return true;
+                }
+            }
+            if (b is SkolemVariable)
+            {
+                if (a.Variables.Contains(b.Index)) return false;
+                else
+                {
+                    map[b.Index] = a.Index;
+                    ra = a;
+                    rb = a;
+                    return true;
+                }
+            }
+            if (a is SkolemConstant && b is SkolemConstant) return false;
+            if(a is SkolemFunctor fa && b is SkolemFunctor fb)
+            {
+                if (fa.Operator != fb.Operator) return false;
+                int c = fa.Operator.Count;
+                SkolemTerm[] tas = new SkolemTerm[c];
+                SkolemTerm[] tbs = new SkolemTerm[c];
+                for (int i=0;i< c; i++)
+                    if (!Unify(fa.Terms[i], fb.Terms[i], out tas[i], out tbs[i], map)) return false;
+                ra = Substitution(Call(fa.Operator, tas),map);
+                rb = Substitution(fb.True ? Call(fb.Operator, tbs) : Call(fb.Operator, tbs).Mirror,map);
+                return true;
+            }
+            return false;
+        }
     }
 }
