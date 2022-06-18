@@ -71,10 +71,12 @@ namespace ATP.Core.FirstOrder
                 Functor f = new(Terms.Count, @operator, terms, false);
                 Terms.Add(f);
                 functors.Add(t);
+                t.Mirror = f;
+                f.Mirror = t;
             }
             return functors[0];
         }
-        public Term Parse(string value)
+        public virtual Term Parse(string value)
         {
             value = value.Replace("\n", "").Replace("\r", "").Replace("\t", "");
             int index = 0;

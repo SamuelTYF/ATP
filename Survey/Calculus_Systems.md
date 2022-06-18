@@ -109,10 +109,72 @@ $$
 $$ \cfrac{\color{red} \vdash Implies[Or[Implies[p,r],Implies[q,r]],Implies[Or[p,q],r]]}{\cfrac{\color{red}Or[Implies[p,r],Implies[q,r]],Or[p,q] \vdash r}{\cfrac{\color{red}Or[p,q] \vdash r,p}{\color{green}p \vdash r,p \qquad \color{red}q \vdash r,p} \qquad \color{black}Or[p,q] \vdash r,q}}
 $$
 
+# Searching Algorithm for LK
+
+$$TERM=\{<u_i,FORM(i)\}>\}=\{u_0,FORM(0)\}$$
+
+$$FORM(0)=\{\}$$
+
+$$AVAIL=\{u_1,u_2,...\}$$
+
+## $Left-\exist$
+
+Replace $A=\exist x,B$ by $B(t/x)$
+
+where: $t=Head(AVAIL)$
+
+$$TERM=TEARM\cup\{<t,\{\}>\}$$
+
+$$AVAIL=Tail(AVAIL)$$
+
+## $Left-\forall$
+
+For each $u_k\in\{u_k|<u_k,FORM(k)>\in TERM\}$
+
+if $A=\forall x,B\not\in FORM(k)$
+
+Add $B(u_k/x)$ to the left side
+
+$$FORM(k)=FORM(k)\cup\{A\}$$
+
+## $Right-\forall$
+
+Replace $A=\exist x,B$ by $B(t/x)$
+
+where: $t=Head(AVAIL)$
+
+$$TERM=TEARM\cup\{<t,\{\}>\}$$
+
+$$AVAIL=Tail(AVAIL)$$
+
+## $Right-\exist$
+
+For each $u_k\in\{u_k|<u_k,FORM(k)>\in TERM\}$
+
+if $A=\forall x,B\not\in FORM(k)$
+
+Add $B(u_k/x)$ to the right side
+
+$$FORM(k)=FORM(k)\cup\{A\}$$
+
+# Test Result
+
 $$
 \cfrac{\color{green} \vdash (\exist x((P)\to(Q(x))))\to((P)\to(\exist z(Q(z))))}{\cfrac{\color{green}\exist x((P)\to(Q(x))) \vdash (P)\to(\exist z(Q(z)))}{\cfrac{\color{green}\exist x((P)\to(Q(x))),P \vdash \exist z(Q(z))}{\cfrac{\color{green}(P)\to(Q(t_1)),P \vdash \exist z(Q(z))}{\color{green}P \vdash \exist z(Q(z)),P \qquad \cfrac{\color{green}Q(t_1),P \vdash \exist z(Q(z))}{\color{green}Q(t_1),P \vdash \exist z(Q(z)),Q(t_0),Q(t_1)}}}}}
 $$
 
 $$
 \cfrac{\color{red} \vdash (\exist x((P)\to(Q(x))))\to((P)\to(\forall z(Q(z))))}{\cfrac{\color{red}\exist x((P)\to(Q(x))) \vdash (P)\to(\forall z(Q(z)))}{\cfrac{\color{red}\exist x((P)\to(Q(x))),P \vdash \forall z(Q(z))}{\cfrac{\color{red}(P)\to(Q(t_1)),P \vdash \forall z(Q(z))}{\color{green}P \vdash \forall z(Q(z)),P \qquad \cfrac{\color{red}Q(t_1),P \vdash \forall z(Q(z))}{\color{red}Q(t_1),P \vdash Q(t_2)}}}}}
+$$
+
+$$
+\cfrac{\color{green} \vdash (\exist x(A \wedge B))\to(\exist x(A) \wedge \exist x(B))}{\cfrac{\color{green}\exist x(A \wedge B) \vdash \exist x(A) \wedge \exist x(B)}{\cfrac{\color{green}\exist x(A \wedge B) \vdash \exist x(A)}{\cfrac{\color{green}A \wedge B \vdash \exist x(A)}{\cfrac{\color{green}A,B \vdash \exist x(A)}{\color{green}A,B \vdash \exist x(A),A}}} \qquad \cfrac{\color{green}\exist x(A \wedge B) \vdash \exist x(B)}{\cfrac{\color{green}A \wedge B \vdash \exist x(B)}{\cfrac{\color{green}A,B \vdash \exist x(B)}{\color{green}A,B \vdash \exist x(B),B}}}}}
+$$
+
+$$
+\cfrac{\color{green} \vdash (\forall x(A) \vee \forall x(B))\to(\forall x(A \vee B))}{\cfrac{\color{green}\forall x(A) \vee \forall x(B) \vdash \forall x(A \vee B)}{\cfrac{\color{green}\forall x(A) \vdash \forall x(A \vee B)}{\cfrac{\color{green}\forall x(A),A \vdash \forall x(A \vee B)}{\cfrac{\color{green}\forall x(A),A \vdash A \vee B}{\color{green}\forall x(A),A \vdash A,B}}} \qquad \cfrac{\color{green}\forall x(B) \vdash \forall x(A \vee B)}{\cfrac{\color{green}\forall x(B),B \vdash \forall x(A \vee B)}{\cfrac{\color{green}\forall x(B),B \vdash A \vee B}{\color{green}\forall x(B),B \vdash A,B}}}}}
+$$
+
+$$
+\cfrac{\color{green} \vdash ((\exist x(A))\to(\forall x(B)))\to(\forall x((A)\to(B)))}{\cfrac{\color{green}(\exist x(A))\to(\forall x(B)) \vdash \forall x((A)\to(B))}{\cfrac{\color{green} \vdash \forall x((A)\to(B)),\exist x(A)}{\cfrac{\color{green} \vdash (A)\to(B),\exist x(A)}{\cfrac{\color{green}A \vdash B,\exist x(A)}{\color{green}A \vdash B,\exist x(A),A}}} \qquad \cfrac{\color{green}\forall x(B) \vdash \forall x((A)\to(B))}{\cfrac{\color{green}\forall x(B),B \vdash \forall x((A)\to(B))}{\cfrac{\color{green}\forall x(B),B \vdash (A)\to(B)}{\color{green}\forall x(B),B,A \vdash B}}}}}
 $$

@@ -1,4 +1,6 @@
-﻿namespace ATP.Core.FirstOrder
+﻿using System.Text;
+
+namespace ATP.Core.FirstOrder
 {
     public class FirstOrderGentzenSystem:FirstOrderSystem
     {
@@ -14,7 +16,7 @@
             And = GetOperator("And", 2);
             Or = GetOperator("Or", 2);
             Implies = GetOperator("Implies", 2);
-            Forall = GetOperator("ForAll", 2);
+            Forall = GetOperator("Forall", 2);
             Exist = GetOperator("Exist", 2);
             TempVariableCount = 0;
             TempTerms = new();
@@ -37,16 +39,17 @@
             }
             else throw new Exception();
         }
-        public bool Test(Term term)
+        public bool Test(Term term, int depth=10)
         {
             FiniteSequent sequent = new();
             sequent.RegisterRight(term.Index);
-            Test(sequent);
+            Test(sequent, depth);
             return sequent.Mode == Mode.Success;
         }
-        public void Test(FiniteSequent sequent)
+        public void Test(FiniteSequent sequent, int depth)
         {
             if (sequent.Mode == Mode.Success) return;
+            if (depth == 0) return;
             foreach(int left in sequent.Left)
                 if (!Terms[left].True)
                 {
@@ -57,7 +60,7 @@
                     next.RegisterRight(Terms[left].Mirror.Index);
                     sequent.Nodes = new();
                     sequent.Nodes.Add(next);
-                    Test(next);
+                    Test(next, depth-1);
                     sequent.Mode = next.Mode;
                     return;
                 }
@@ -71,7 +74,7 @@
                     next.RegisterLeft(Terms[right].Mirror.Index);
                     sequent.Nodes = new();
                     sequent.Nodes.Add(next);
-                    Test(next);
+                    Test(next, depth-1);
                     sequent.Mode = next.Mode;
                     return;
                 }
@@ -88,7 +91,7 @@
                         next.RegisterLeft(t.Terms[1].Index);
                         sequent.Nodes = new();
                         sequent.Nodes.Add(next);
-                        Test(next);
+                        Test(next, depth-1);
                         sequent.Mode = next.Mode;
                         return;
                     }
@@ -106,7 +109,7 @@
                         next.RegisterRight(t.Terms[1].Index);
                         sequent.Nodes = new();
                         sequent.Nodes.Add(next);
-                        Test(next);
+                        Test(next, depth-1);
                         sequent.Mode = next.Mode;
                         return;
                     }
@@ -120,7 +123,7 @@
                         next.RegisterRight(t.Terms[1].Index);
                         sequent.Nodes = new();
                         sequent.Nodes.Add(next);
-                        Test(next);
+                        Test(next, depth-1);
                         sequent.Mode = next.Mode;
                         return;
                     }
@@ -145,8 +148,8 @@
                         sequent.Nodes.Add(next2);
                         foreach (FiniteSequent next in sequent.Nodes)
                         {
-                            Test(next);
-                            if (next.Mode == Mode.Fail)
+                            Test(next, depth-1);
+                            if (next.Mode != Mode.Success)
                             {
                                 sequent.Mode = Mode.Fail;
                                 return;
@@ -172,8 +175,8 @@
                         sequent.Nodes.Add(next2);
                         foreach (FiniteSequent next in sequent.Nodes)
                         {
-                            Test(next);
-                            if (next.Mode == Mode.Fail)
+                            Test(next, depth-1);
+                            if (next.Mode != Mode.Success)
                             {
                                 sequent.Mode = Mode.Fail;
                                 return;
@@ -203,8 +206,8 @@
                         sequent.Nodes.Add(next2);
                         foreach (FiniteSequent next in sequent.Nodes)
                         {
-                            Test(next);
-                            if (next.Mode == Mode.Fail)
+                            Test(next, depth-1);
+                            if (next.Mode != Mode.Success)
                             {
                                 sequent.Mode = Mode.Fail;
                                 return;
@@ -228,7 +231,7 @@
                         next.RegisterLeft(Apply(t.Terms[1], t.Terms[0] as BoundLiteral,temp as Literal).Index);
                         sequent.Nodes = new();
                         sequent.Nodes.Add(next);
-                        Test(next);
+                        Test(next, depth-1);
                         sequent.Mode = next.Mode;
                         return;
                     }
@@ -249,7 +252,7 @@
                         {
                             sequent.Nodes = new();
                             sequent.Nodes.Add(next);
-                            Test(next);
+                            Test(next, depth-1);
                             sequent.Mode = next.Mode;
                             return;
                         }
@@ -269,7 +272,7 @@
                         next.RegisterRight(Apply(t.Terms[1], t.Terms[0] as BoundLiteral, temp as Literal).Index);
                         sequent.Nodes = new();
                         sequent.Nodes.Add(next);
-                        Test(next);
+                        Test(next, depth-1);
                         sequent.Mode = next.Mode;
                         return;
                     }
@@ -290,7 +293,7 @@
                         {
                             sequent.Nodes = new();
                             sequent.Nodes.Add(next);
-                            Test(next);
+                            Test(next, depth-1);
                             sequent.Mode = next.Mode;
                             return;
                         }
@@ -332,6 +335,161 @@
             string info = $"\\color{{{color}}}{string.Join(",", sequent.Left.Select(left => Format(Terms[left])))} \\vdash {string.Join(",", sequent.Right.Select(right => Format(Terms[right])))}";
             if (sequent.Nodes == null) return info;
             else return $"\\cfrac{{{info}}}{{{string.Join(" \\qquad ", sequent.Nodes.Select(node => Trace(node)))}}}";
+        }
+        public PrenexForm ToPrenexForm(Term term)
+        {
+            if (term is Literal literal) return new(new(), new(), literal);
+            else if (term is BoundLiteral boundliteral) return new(new(), new(), boundliteral);
+            else if (term is Functor t)
+            {
+                if (t.Operator == And)
+                {
+                    PrenexForm p1 = ToPrenexForm(t.Terms[0]);
+                    PrenexForm p2 = ToPrenexForm(t.Terms[1]);
+                    List<bool> qs = new();
+                    qs.AddRange(p1.Quantifiers);
+                    qs.AddRange(p2.Quantifiers);
+                    List<BoundLiteral> bs = new();
+                    bs.AddRange(p1.BoundLiterals);
+                    bs.AddRange(p2.BoundLiterals);
+                    PrenexForm r = new(qs, bs, Call(And, p1.Term, p2.Term));
+                    return t.True ? r : r.Mirror();
+                }
+                else if (t.Operator == Or)
+                {
+                    PrenexForm p1 = ToPrenexForm(t.Terms[0]);
+                    PrenexForm p2 = ToPrenexForm(t.Terms[1]);
+                    List<bool> qs = new();
+                    qs.AddRange(p1.Quantifiers);
+                    qs.AddRange(p2.Quantifiers);
+                    List<BoundLiteral> bs = new();
+                    bs.AddRange(p1.BoundLiterals);
+                    bs.AddRange(p2.BoundLiterals);
+                    PrenexForm r = new(qs, bs, Call(Or, p1.Term, p2.Term));
+                    return t.True ? r : r.Mirror();
+                }
+                else if (t.Operator == Implies)
+                {
+                    PrenexForm p1 = ToPrenexForm(t.Terms[0]);
+                    PrenexForm p2 = ToPrenexForm(t.Terms[1]);
+                    List<bool> qs = new();
+                    qs.AddRange(p1.Quantifiers);
+                    qs.AddRange(p2.Quantifiers);
+                    List<BoundLiteral> bs = new();
+                    bs.AddRange(p1.BoundLiterals);
+                    bs.AddRange(p2.BoundLiterals);
+                    PrenexForm r = new(qs, bs, Call(Implies, p1.Term, p2.Term));
+                    return t.True ? r : r.Mirror();
+                }
+                else if (t.Operator == Exist)
+                {
+                    PrenexForm r = ToPrenexForm(t.Terms[1]);
+                    r.Quantifiers.Insert(0,false);
+                    r.BoundLiterals.Insert(0,t.Terms[0] as BoundLiteral);
+                    return t.True ? r : r.Mirror();
+                }
+                else if (t.Operator == Forall)
+                {
+                    PrenexForm r = ToPrenexForm(t.Terms[1]);
+                    r.Quantifiers.Insert(0,true);
+                    r.BoundLiterals.Insert(0,t.Terms[0] as BoundLiteral);
+                    return t.True ? r : r.Mirror();
+                }
+                else return new(new(), new(), t);
+            }
+            else throw new Exception();
+        }
+        public Term Substitution(Term term,Dictionary<int,int> map)
+        {
+            if (!term.True) return Substitution(term.Mirror, map).Mirror;
+            if (map.ContainsKey(term.Index)) return Terms[map[term.Index]];
+            if (term is Literal literal) return literal;
+            if (term is BoundLiteral boundliteral) return boundliteral;
+            if (term is Functor f) return Call(f.Operator, f.Terms.Select(t => Substitution(t, map)).ToArray());
+            throw new Exception();
+        }
+        public string Format(PrenexForm pf)
+        {
+            StringBuilder builder = new();
+            for (int i = 0; i < pf.BoundLiterals.Count; i++)
+                builder.Append(pf.Quantifiers[i] ? $"\\forall {pf.BoundLiterals[i]}" : $"\\exist {pf.BoundLiterals[i]}");
+            return $"{builder}({Format(pf.Term)})";
+        }
+        public override Term Parse(string value)
+        {
+            value = value.Replace("\n", "").Replace("\r", "").Replace("\t", "");
+            int index = 0;
+            Dictionary<string, string> map = new();
+            return FirstOrderParse(value.ToCharArray(), ref index, map);
+        }
+        public Term FirstOrderParse(char[] values, ref int index, Dictionary<string,string> map)
+        {
+            StringBuilder builder = new();
+            for (; index < values.Length && values[index] is not ('[' or ']' or ','); index++)
+                builder.Append(values[index]);
+            string name = builder.ToString();
+            if (index == values.Length || values[index] is ']' or ',')
+            {
+                if (map.ContainsKey(name)) return GetBoundLiteral(map[name], true);
+                else return GetLiteral(name, true);
+            }
+            else if (values[index] is '[')
+            {
+                if (name == "Not")
+                {
+                    index++;
+                    Term term = FirstOrderParse(values, ref index,map);
+                    index++;
+                    return term.Mirror;
+                }
+                else if(name=="Exist")
+                {
+                    index++;
+                    builder.Clear();
+                    for (; index < values.Length && values[index] is not ('[' or ']' or ','); index++)
+                        builder.Append(values[index]);
+                    string bound = builder.ToString();
+                    index++;
+                    if (map.ContainsKey(bound)) throw new Exception();
+                    string newbound = $"x_{BoundLiterals.Count}";
+                    map[bound] = newbound;
+                    Term bl = GetBoundLiteral(newbound);
+                    Term r = Call(Exist, bl, FirstOrderParse(values, ref index, map));
+                    map.Remove(bound);
+                    index++;
+                    return r;
+                }
+                else if (name == "Forall")
+                {
+                    index++;
+                    builder.Clear();
+                    for (; index < values.Length && values[index] is not ('[' or ']' or ','); index++)
+                        builder.Append(values[index]);
+                    string bound = builder.ToString();
+                    index++;
+                    if (map.ContainsKey(bound)) throw new Exception();
+                    string newbound = $"x_{BoundLiterals.Count}";
+                    map[bound] = newbound;
+                    Term bl = GetBoundLiteral(newbound);
+                    Term r = Call(Forall, bl, FirstOrderParse(values, ref index, map));
+                    map.Remove(bound);
+                    index++;
+                    return r;
+                }
+                else
+                {
+                    Operator @operator = OperatorMap[name];
+                    Term[] terms = new Term[@operator.Count];
+                    for (int i = 0; i < terms.Length; i++)
+                    {
+                        index++;
+                        terms[i] = FirstOrderParse(values, ref index,map);
+                    }
+                    index++;
+                    return Call(@operator, terms);
+                }
+            }
+            else throw new Exception();
         }
     }
 }

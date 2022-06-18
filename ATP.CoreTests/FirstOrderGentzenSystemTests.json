@@ -1,0 +1,36 @@
+{
+  "SearchingTest": [
+    {
+      "source": "Implies[Exist[_x,Implies[P,Q[_x]]],Implies[P,Exist[_z,Q[_z]]]]",
+      "mode": "Success",
+      "operators": [
+        "Q_1"
+      ]
+    },
+    {
+      "source": "Implies[Exist[_x,Implies[P,Q[_x]]],Implies[P,Forall[_z,Q[_z]]]]",
+      "mode": "Fail",
+      "operators": [
+        "Q_1"
+      ]
+    },
+    {
+      "source": "Implies[Exist[_x,And[A,B]],And[Exist[_x,A],Exist[_x,B]]]",
+      "mode": "Success",
+      "operators": [
+      ]
+    },
+    {
+      "source": "Implies[Or[Forall[_x,A],Forall[_x,B]],Forall[_x,Or[A,B]]]",
+      "mode": "Success",
+      "operators": [
+      ]
+    },
+    {
+      "source": "Implies[Implies[Exist[_x,A],Forall[_x,B]],Forall[_x,Implies[A,B]]]",
+      "mode": "Success",
+      "operators": [
+      ]
+    }
+  ]
+}

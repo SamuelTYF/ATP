@@ -102,3 +102,4 @@ D:\ATP\ATP.CoreTests\obj\Debug\net6.0\refint\ATP.CoreTests.dll
 D:\ATP\ATP.CoreTests\obj\Debug\net6.0\ATP.CoreTests.pdb
 D:\ATP\ATP.CoreTests\obj\Debug\net6.0\ATP.CoreTests.genruntimeconfig.cache
 D:\ATP\ATP.CoreTests\obj\Debug\net6.0\ref\ATP.CoreTests.dll
+D:\ATP\ATP.CoreTests\bin\Debug\net6.0\FirstOrderGentzenSystemTests.json
