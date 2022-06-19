@@ -47,10 +47,18 @@
         {
             Operator = @operator;
             Terms = terms;
-            foreach(SkolemTerm term in terms)
+            for(int i=0;i<terms.Length;i++)
             {
+                SkolemTerm term = terms[i];
                 Variables.UnionWith(term.Variables);
                 Constants.UnionWith(term.Constants);
+                if (!term.Backs.ContainsKey(@operator.Index))
+                {
+                    HashSet<int>[] bs = new HashSet<int>[@operator.Count];
+                    for (int j = 0; j < @operator.Count; j++) bs[j] = new();
+                    term.Backs[@operator.Index] = bs;
+                }
+                term.Backs[@operator.Index][i].Add(Index);
             }
         }
         public override string ToString() => True ? $"{Operator.Name}({string.Join<SkolemTerm>(",",Terms)})" : $"\\lnot {Operator.Name}({string.Join<SkolemTerm>(",", Terms)})";

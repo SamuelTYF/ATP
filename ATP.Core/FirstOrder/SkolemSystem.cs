@@ -1,4 +1,6 @@
-﻿namespace ATP.Core.FirstOrder
+﻿using ATP.Core.PL;
+
+namespace ATP.Core.FirstOrder
 {
     public class SkolemSystem
     {
@@ -77,6 +79,7 @@
                 functors.Add(t);
                 t.Mirror = f;
                 f.Mirror = t;
+                
             }
             return functors[0];
         }
@@ -254,26 +257,23 @@
             }
             else return term;
         }
-        public bool Unify(SkolemTerm a, SkolemTerm b,out SkolemTerm ra,out SkolemTerm rb,Dictionary<int,int> map=null)
+        public bool Unify(SkolemTerm a, SkolemTerm b,out SkolemTerm r,Dictionary<int,int> map=null)
         {
             if (map == null) map = new();
-            ra = null;
-            rb = null;
+            r = null;
             a = Substitution(a, map);
             b = Substitution(b, map);
             if (a.Index == b.Index)
             {
-                ra = a;
-                rb = b;
+                r = a;
                 return true;
             }
             if (a.Index == b.Mirror.Index) return false;
             if (!a.True)
             {
-                if(Unify(a.Mirror,b.Mirror,out SkolemTerm ta,out SkolemTerm tb,map))
+                if(Unify(a.Mirror,b.Mirror,out SkolemTerm t,map))
                 {
-                    ra = ta.Mirror;
-                    rb = tb.Mirror;
+                    r = t.Mirror;
                     return true;
                 }
                 else return false;
@@ -284,8 +284,7 @@
                 else 
                 {
                     map[a.Index] = b.Index;
-                    ra = b;
-                    rb = b;
+                    r = b;
                     return true;
                 }
             }
@@ -295,25 +294,277 @@
                 else
                 {
                     map[b.Index] = a.Index;
-                    ra = a;
-                    rb = a;
+                    r = a;
                     return true;
                 }
             }
             if (a is SkolemConstant && b is SkolemConstant) return false;
-            if(a is SkolemFunctor fa && b is SkolemFunctor fb)
+            if(a is SkolemFunctor fa && b is SkolemFunctor fb && b.True)
             {
                 if (fa.Operator != fb.Operator) return false;
                 int c = fa.Operator.Count;
-                SkolemTerm[] tas = new SkolemTerm[c];
-                SkolemTerm[] tbs = new SkolemTerm[c];
+                SkolemTerm[] ts = new SkolemTerm[c];
                 for (int i=0;i< c; i++)
-                    if (!Unify(fa.Terms[i], fb.Terms[i], out tas[i], out tbs[i], map)) return false;
-                ra = Substitution(Call(fa.Operator, tas),map);
-                rb = Substitution(fb.True ? Call(fb.Operator, tbs) : Call(fb.Operator, tbs).Mirror,map);
+                    if (!Unify(fa.Terms[i], fb.Terms[i], out ts[i], map)) return false;
+                r = Substitution(Call(fa.Operator, ts),map);
                 return true;
             }
             return false;
+        }
+        public bool Unify(SkolemTerm[] terms,out SkolemTerm result)
+        {
+            Dictionary<int, int> map = new();
+            result = terms[0];
+            for(int i=1;i< terms.Length;i++)
+                if (!Unify(result, terms[i], out result, map))
+                {
+                    result = null;
+                    return false;
+                }
+            return true;
+        }
+        public class OperatorConflict
+        {
+            public HashSet<int> Terms;
+            public HashSet<int> Variables;
+            public bool Conflict;
+            public OperatorConflict()
+            {
+                Terms = new();
+                Variables = new();
+                Conflict = false;
+            }
+            public void Register(SkolemTerm term)
+            {
+                if (Conflict) return;
+                if (Terms.Contains(term.Index)|| Variables.Contains(term.Index)) return;
+                if(Terms.Contains(term.Mirror.Index) || Variables.Contains(term.Mirror.Index))
+                {
+                    Conflict = true;
+                    return;
+                }
+                if(term is SkolemVariable)
+                    Variables.Add(term.Index);
+                else
+                {
+                    Terms.Add(term.Index);
+                    if (Terms.Count > 1) Conflict = true;
+                }
+            }
+        }
+        public SkolemTerm[] Test(SkolemTerm[] terms)
+        {
+            SkolemTerm[] results = new SkolemTerm[terms.Length];
+            for (int i = 0; i < results.Length; i++)
+                results[i] = terms[i];
+            Dictionary<int, int> map = new();
+            bool success;
+            do
+            {
+                success = false;
+                OperatorConflict[][] ops = new OperatorConflict[Operators.Count][];
+                for (int i = 0; i < ops.Length; i++)
+                {
+                    OperatorConflict[] op = new OperatorConflict[Operators[i].Count];
+                    for (int j = 0; j < op.Length; j++)
+                        op[j] = new();
+                    ops[i] = op;
+                }
+                for (int i = 0; i < terms.Length; i++)
+                    SearchConflict(terms[i], ops);
+                for (int i = 0; i < ops.Length; i++)
+                {
+                    OperatorConflict[] op = ops[i];
+                    for (int j = 0; j < op.Length; j++)
+                        if (!op[j].Conflict && op[i].Variables.Count>0)
+                        {
+                            //TODO
+                        }
+                }
+            } while (success);
+            return results;
+        }
+        public void SearchConflict(SkolemTerm term, OperatorConflict[][] ops)
+        {
+            if(term is SkolemFunctor f)
+            {
+                for (int i = 0; i < f.Operator.Count; i++)
+                {
+                    ops[f.Operator.Index][i].Register(f.Terms[i]);
+                    SearchConflict(f.Terms[i], ops);
+                }
+            }
+        }
+        public bool Combine(SkolemTerm[] terms1, SkolemTerm[] terms2, out SkolemTerm[] result1,out SkolemTerm[] result2,out SkolemTerm r)
+        {
+            result1 = new SkolemTerm[terms1.Length];
+            result2 = new SkolemTerm[terms2.Length];
+            Dictionary<int, int> map = new();
+            bool success = false;
+            r=null;
+            for(int i=0;i<terms1.Length&&!success;i++)
+                for(int j=0;j<terms2.Length;j++)
+                {
+                    map.Clear();
+                    if (Unify(terms1[i], terms2[j],out r, map))
+                    {
+                        if (r == null) throw new Exception();
+                        success = true;
+                        for (int t = 0; t < terms1.Length; t++)
+                            result1[t] = Substitution(terms1[t], map);
+                        for (int t = 0; t < terms2.Length; t++)
+                            result2[t] = Substitution(terms2[t], map);
+                        break;
+                    }
+                }
+            if (!success) return false;
+            map.Clear();
+            for (int i = 0; i < terms1.Length; i++)
+            {
+                Dictionary<int, int> tmap = new(map);
+                SkolemTerm temp;
+                if (Unify(r, result1[i], out temp, tmap))
+                {
+                    map = tmap;
+                    r = temp;
+                }
+            }
+            for (int i = 0; i < terms2.Length; i++)
+            {
+                Dictionary<int, int> tmap = new(map);
+                SkolemTerm temp;
+                if (Unify(r, result2[i], out temp, tmap))
+                {
+                    map = tmap;
+                    r = temp;
+                }
+            }
+            for (int t = 0; t < terms1.Length; t++)
+                result1[t] = Substitution(result1[t], map);
+            for (int t = 0; t < terms2.Length; t++)
+                result2[t] = Substitution(result2[t], map);
+            return true;
+        }
+        public HashSet<SkolemTerm> Resolution(HashSet<SkolemTerm> a, HashSet<SkolemTerm> b,out SkolemTerm unify)
+        {
+            unify = null;
+            HashSet<int> variables = new();
+            foreach (SkolemTerm t in a)
+                variables.UnionWith(t.Variables);
+            foreach (SkolemTerm t in b)
+                variables.ExceptWith(t.Variables);
+            Dictionary<int, int> map = new();
+            foreach (int v in variables)
+                map[v] = GetVariable($"t_{Variables.Count}").Index;
+            List<SkolemTerm> ma = new();
+            foreach (SkolemTerm t in a)
+                ma.Add(Substitution(t, map).Mirror);
+            if (Combine(ma.ToArray(), b.ToArray(), out SkolemTerm[] ra, out SkolemTerm[] rb,out unify))
+            {
+                HashSet<SkolemTerm> rs = new();
+                foreach (SkolemTerm t in ra)
+                    if (t.Index != unify.Index && t.Index!=unify.Mirror.Index) rs.Add(t.Mirror);
+                foreach (SkolemTerm t in rb)
+                    if (t.Index != unify.Index && t.Index != unify.Mirror.Index) rs.Add(t);
+                return rs;
+            }
+            else return null;
+        }
+        public bool Test(SkolemClauses cnf, IDAG<int, HashSet<SkolemTerm>, (HashSet<SkolemTerm>, HashSet<SkolemTerm>)> dag, out string tree)
+        {
+            tree = null;
+            List<int> clauses = new(cnf.Clauses);
+            List<List<(int, int, HashSet<SkolemTerm>)>> parents = new();
+            Dictionary<int, int> map = new();
+            for (int i = 0; i < clauses.Count; i++)
+            {
+                map[clauses[i]] = i;
+                parents.Add(new());
+            }
+            for (int i = 0; i < clauses.Count; i++)
+            {
+                HashSet<SkolemTerm> c1 = Clauses[clauses[i]];
+                dag.RegisterVertex(clauses[i], c1);
+                for (int j = 0; j < i; j++)
+                {
+                    HashSet<SkolemTerm> c2 = Clauses[clauses[j]];
+                    HashSet<SkolemTerm> c = Resolution(c1, c2, out SkolemTerm unify);
+                    if (c == null) continue;
+                    HashSet<SkolemTerm> u = new();
+                    u.Add(unify);
+                    u.Add(unify.Mirror);
+                    Console.WriteLine($"$$\\cfrac{{\\{{{string.Join(" , ", c1)}\\}}\\qquad\\{{{string.Join(" , ", c2)}\\}}}}{{\\{{{string.Join(" , ", u)}\\}}\\qquad\\{{{string.Join(" , ", c)}\\}}}}$$");
+                    int p = Find(c);
+                    dag.RegisterEdge(clauses[i], clauses[j], (u, c));
+                    if (!clauses.Contains(p))
+                    {
+                        map[p] = clauses.Count;
+                        clauses.Add(p);
+                        parents.Add(new());
+                    }
+                    parents[map[p]].Add((i, j, u));
+                    if (c.Count == 0)
+                    {
+                        tree = Trace(map[p], clauses, parents, out _);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public string Trace(int index, List<int> clauses, List<List<(int, int, HashSet<SkolemTerm>)>> parents, out HashSet<int> cs)
+        {
+            List<(int, int, HashSet<SkolemTerm>)> ps = parents[index];
+            if (ps.Count > 0)
+            {
+                (int, int, HashSet<SkolemTerm>) p = ps[0];
+                Console.WriteLine($"Combine {PrintClause(Clauses[clauses[p.Item1]])}\t\t{PrintClause(Clauses[clauses[p.Item2]])}");
+                string s1 = Trace(p.Item1, clauses, parents, out HashSet<int> cs1);
+                string s2 = Trace(p.Item2, clauses, parents, out HashSet<int> cs2);
+                cs = new(cs1.Union(cs2));
+                if (s1 == null && s2 == null)
+                {
+                    s1 = string.Join(",", Clauses[clauses[index]]) + "\\vdash";
+                    s2 = string.Join(",", p.Item3) + "\\vdash";
+                }
+                else if (s1 == null)
+                {
+                    s1 = s2;
+                    s2 = string.Join(",", p.Item3) + "\\vdash";
+                }
+                else if (s2 == null) s2 = string.Join(",", p.Item3) + "\\vdash";
+                return $"\\cfrac{{{s1} \\qquad {s2}}}{{{string.Join(",", cs.Select(c => PrintClause(Clauses[c])))},{PrintClause(Clauses[clauses[index]])}\\vdash}}";
+            }
+            else
+            {
+                cs = new();
+                cs.Add(clauses[index]);
+                return null;
+            }
+        }
+        public string PrintClause(HashSet<SkolemTerm> clause)
+            => clause.Count == 1 ? $"{string.Join(",", clause)}" : $"\\{{{string.Join(",", clause)}\\}}";
+        public string PrintTable(IDAG<int, HashSet<SkolemTerm>, (HashSet<SkolemTerm>, HashSet<SkolemTerm>)> dag)
+        {
+            List<int> keys = new(dag.Keys);
+            List<string> rows = new();
+            List<string> headers = new();
+            headers.Add("From");
+            headers.AddRange(dag.Values.Select(value => $"${PrintClause(value)}$"));
+            rows.Add($"| {string.Join(" | ", headers)} |");
+            rows.Add($"| {string.Join(" | ", headers.Select(_ => ":-:"))} |");
+            foreach (int key in keys)
+            {
+                List<string> values = new();
+                values.Add($"${PrintClause(dag.GetVertex(key))}$");
+                foreach (int k in keys)
+                {
+                    if (dag.GetEdge(key, k, out (HashSet<SkolemTerm>, HashSet<SkolemTerm>) e)) values.Add($"$${PrintClause(e.Item1)}\\qquad {PrintClause(e.Item2)}$$");
+                    else values.Add("");
+                }
+                rows.Add($"| {string.Join(" | ", values)} |");
+            }
+            return string.Join("\n", rows);
         }
     }
 }

@@ -23,6 +23,10 @@ namespace ATP.Core.FirstOrder
             SkolemSystem ssystem = new();
             SkolemForm sf= ssystem.FromPrenexForm(pf,system);
             Console.WriteLine(ssystem.Format(sf));
+            DAG_Dictionary<int, HashSet<SkolemTerm>, (HashSet<SkolemTerm>, HashSet<SkolemTerm>)> dag = new();
+            Console.WriteLine(ssystem.Test(sf.Clauses, dag, out string tree));
+            Console.WriteLine(tree);
+            Console.WriteLine(ssystem.PrintTable(dag));
         }
     }
 }

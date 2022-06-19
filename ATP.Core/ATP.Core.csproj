@@ -6,11 +6,15 @@
     <Nullable>enable</Nullable>
     <PlatformTarget>x64</PlatformTarget>
     <OutputType>Exe</OutputType>
-    <StartupObject>ATP.Core.FirstOrder.UnifyTest</StartupObject>
+    <StartupObject>ATP.Core.FirstOrder.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Drawing\" />
   </ItemGroup>
 
 </Project>
