@@ -22,4 +22,6 @@ $\alpha\to$ indicates $\alpha$ is true
 
 $\to\beta$ indicates $\beta$ is false
 
+$\{\lnot P_1,...,\lnot P_2\}$ is called a **negative clause** or **goal clause**
+
 [^1]: A. Horn, ‘On sentences which are true of direct unions of algebras1’, The Journal of Symbolic Logic, vol. 16, no. 1, pp. 14–21, Mar. 1951, doi: 10.2307/2268661.

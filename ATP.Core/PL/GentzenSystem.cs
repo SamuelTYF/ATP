@@ -384,7 +384,7 @@
             if (term is Variable variable)
             {
                 CNF cnf = new();
-                HashSet<CNF.Literal> c = new();
+                HashSet<Literal> c = new();
                 c.Add(system.Literal(variable.Name, @true));
                 cnf.Values.Add(system.Find(c));
                 return cnf;

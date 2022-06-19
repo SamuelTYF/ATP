@@ -29,9 +29,7 @@ $$
 tree=f(g(a),f(g(a),a))
 $$
 
-$$
-\cfrac{\cfrac{\cfrac{P(S_2(c_0,c_0),c_0)\vdash \qquad \lnot P(c_0,c_0),P(c_0,c_0)\vdash}{\{P(S_2(x_0,x_1),x_0),P(x_0,c_0)\},\{\lnot P(x_0,c_0),\lnot P(x_0,x_1),\lnot P(x_1,x_0)\},P(S_2(c_0,c_0),c_0)\vdash} \qquad \lnot P(S_2(c_0,c_0),c_0),P(S_2(c_0,c_0),c_0)\vdash}{\{P(S_2(x_0,x_1),x_0),P(x_0,c_0)\},\{\lnot P(x_0,c_0),\lnot P(x_0,x_1),\lnot P(x_1,x_0)\},\lnot P(c_0,S_2(c_0,c_0))\vdash} \qquad \cfrac{P(c_0,S_2(c_0,c_0))\vdash \qquad \lnot P(c_0,c_0),P(c_0,c_0)\vdash}{\{P(x_0,S_2(x_0,x_1)),P(x_0,c_0)\},\{\lnot P(x_0,c_0),\lnot P(x_0,x_1),\lnot P(x_1,x_0)\},P(c_0,S_2(c_0,c_0))\vdash}}{\{P(S_2(x_0,x_1),x_0),P(x_0,c_0)\},\{\lnot P(x_0,c_0),\lnot P(x_0,x_1),\lnot P(x_1,x_0)\},\{P(x_0,S_2(x_0,x_1)),P(x_0,c_0)\},\{\}\vdash}
-$$
+# Ground Resolution
 
 | From | $\{\lnot P(x_0,c_0),\lnot P(x_0,x_1),\lnot P(x_1,x_0)\}$ | $\{P(x_0,S_2(x_0,x_1)),P(x_0,c_0)\}$ | $\{P(S_2(x_0,x_1),x_0),P(x_0,c_0)\}$ | $P(c_0,S_2(c_0,c_0))$ | $P(S_2(c_0,c_0),c_0)$ | $\{\lnot P(c_0,c_0),\lnot P(S_2(c_0,c_0),c_0)\}$ | $\lnot P(c_0,S_2(c_0,c_0))$ |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |

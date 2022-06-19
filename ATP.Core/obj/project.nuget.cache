@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "KlIStbhLvP0B3+V2LxCWLr/b3lwS7RXjfgcTk8Sq80aUhXmQ2lCmgypO00KwWAmEh7j9eqQHeKUYK+FYLa8Pbw==",
+  "dgSpecHash": "AJbjaz38GOXEy9Sr2wt8uVJgtA24TcbtcXVHyxSl2/MmXh+KrQyU+lJvhdm9ocPsxtXtYbaZNbsKQEy11kXH7Q==",
   "success": true,
   "projectFilePath": "D:\\ATP\\ATP.Core\\ATP.Core.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Pumpkin\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
+    "C:\\Users\\Pumpkin\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512"
+  ],
   "logs": []
 }
