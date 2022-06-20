@@ -19,7 +19,6 @@
             system.Test(state);
             Console.WriteLine(state.Mode);
             Console.WriteLine(system.Trace(state));
-
         }
     }
 }
